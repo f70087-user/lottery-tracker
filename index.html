@@ -3,16 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>我的抽獎追蹤</title>
+  <title>抽獎搜尋助手</title>
   <style>
     :root {
       --primary: #2563eb;
-      --danger: #dc2626;
-      --success: #16a34a;
-      --warning: #d97706;
-      --bg: #f8fafc;
+      --primary-hover: #1d4ed8;
+      --bg: #f1f5f9;
       --card: #ffffff;
-      --text: #1e293b;
+      --text: #0f172a;
+      --muted: #64748b;
       --border: #e2e8f0;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -20,602 +19,344 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.5;
-      padding: 16px;
+      line-height: 1.6;
+      padding: 20px 16px;
     }
-    .container { max-width: 1100px; margin: 0 auto; }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+    }
     header {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
+      text-align: center;
+      margin-bottom: 32px;
     }
-    h1 { font-size: 1.6rem; }
-    .btn {
-      padding: 8px 14px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-    .btn-primary { background: var(--primary); color: white; }
-    .btn-success { background: var(--success); color: white; }
-    .btn-danger { background: var(--danger); color: white; }
-    .btn-warning { background: var(--warning); color: white; }
-    .btn-outline { background: white; border: 1px solid var(--border); }
-    .btn:hover { opacity: 0.9; }
-    .filters {
-      background: var(--card);
-      padding: 16px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    .filters select, .filters input {
-      padding: 7px 10px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 0.9rem;
-    }
-    .stats {
-      font-size: 0.9rem;
-      color: #64748b;
-      margin-bottom: 12px;
-    }
-    .card-list { display: grid; gap: 14px; }
-    .card {
-      background: var(--card);
-      border-radius: 12px;
-      padding: 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-      border-left: 5px solid var(--primary);
-      position: relative;
-    }
-    .card.participated { border-left-color: var(--success); }
-    .card.ended { border-left-color: #94a3b8; opacity: 0.88; }
-    .card.has-error { border-left-color: var(--danger); }
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 10px;
+    h1 {
+      font-size: 1.8rem;
       margin-bottom: 8px;
     }
-    .card-title { font-size: 1.1rem; font-weight: 600; }
-    .badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 500;
-      margin-right: 4px;
-    }
-    .badge-x { background: #e0f2fe; color: #0369a1; }
-    .badge-fb { background: #dbeafe; color: #1d4ed8; }
-    .badge-ig { background: #fce7f3; color: #be185d; }
-    .badge-threads { background: #f1f5f9; color: #334155; }
-    .badge-error { background: #fee2e2; color: #b91c1c; }
-    .countdown {
-      font-weight: 600;
-      color: var(--danger);
+    .subtitle {
+      color: var(--muted);
       font-size: 0.95rem;
     }
-    .countdown.safe { color: var(--success); }
-    .countdown.soon { color: var(--warning); }
-    .meta { font-size: 0.9rem; color: #475569; margin: 6px 0; }
-    .error-box {
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      color: #991b1b;
-      padding: 8px 10px;
-      border-radius: 6px;
-      font-size: 0.85rem;
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 1.05rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="text"]:focus {
+      border-color: var(--primary);
+    }
+    .quick-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .tag {
+      background: #e0f2fe;
+      color: #0369a1;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tag:hover {
+      background: #bae6fd;
+    }
+    .platforms {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
       margin-top: 8px;
     }
-    .actions { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
-    .actions button { font-size: 0.85rem; padding: 6px 10px; }
-
-    .modal {
+    .platform-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      background: #f8fafc;
+      border-radius: 10px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .platform-item:hover {
+      background: #f1f5f9;
+    }
+    .platform-item input {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    .btn-search {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 16px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s;
+    }
+    .btn-search:hover {
+      background: var(--primary-hover);
+    }
+    .results {
       display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 100;
+    }
+    .results.show {
+      display: block;
+    }
+    .result-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      background: #f8fafc;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+    }
+    .result-item .info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .platform-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      font-weight: bold;
+      color: white;
+      font-size: 0.85rem;
     }
-    .modal.show { display: flex; }
-    .modal-content {
-      background: white;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 520px;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 24px;
-    }
-    .modal h2 { margin-bottom: 16px; font-size: 1.3rem; }
-    .form-group { margin-bottom: 14px; }
-    .form-group label {
-      display: block;
+    .icon-x { background: #000; }
+    .icon-fb { background: #1877f2; }
+    .icon-ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+    .icon-threads { background: #000; }
+    .btn-open {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
       font-size: 0.9rem;
-      font-weight: 500;
-      margin-bottom: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
     }
-    .form-group input, .form-group select, .form-group textarea {
-      width: 100%;
-      padding: 8px 10px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 0.95rem;
+    .btn-open:hover {
+      background: var(--primary-hover);
     }
-    .form-group textarea { min-height: 70px; resize: vertical; }
-    .form-actions {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      margin-top: 20px;
+    .tips {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.7;
     }
-    .empty {
+    .tips ul {
+      padding-left: 20px;
+      margin-top: 8px;
+    }
+    .tips li {
+      margin-bottom: 6px;
+    }
+    footer {
       text-align: center;
-      padding: 40px 20px;
-      color: #94a3b8;
-    }
-    @media (max-width: 600px) {
-      h1 { font-size: 1.3rem; }
-      .filters { flex-direction: column; align-items: stretch; }
+      margin-top: 40px;
+      color: var(--muted);
+      font-size: 0.85rem;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>我的抽獎追蹤</h1>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn btn-primary" onclick="openModal()">＋ 新增活動</button>
-        <button class="btn btn-outline" onclick="exportData()">匯出備份</button>
-        <button class="btn btn-outline" onclick="document.getElementById('importFile').click()">匯入備份</button>
-        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
-      </div>
+      <h1>抽獎搜尋助手</h1>
+      <p class="subtitle">快速搜尋 X、Facebook、Instagram、Threads 的抽獎資訊</p>
     </header>
 
-    <div class="filters">
-      <select id="filterPlatform" onchange="render()">
-        <option value="">全部平台</option>
-        <option value="X">X (Twitter)</option>
-        <option value="FB">Facebook</option>
-        <option value="IG">Instagram</option>
-        <option value="Threads">Threads</option>
-      </select>
-      <select id="filterStatus" onchange="render()">
-        <option value="">全部狀態</option>
-        <option value="進行中">進行中</option>
-        <option value="已截止">已截止</option>
-        <option value="已開獎">已開獎</option>
-        <option value="已結束">已結束</option>
-      </select>
-      <select id="filterParticipated" onchange="render()">
-        <option value="">參加狀態</option>
-        <option value="true">已參加</option>
-        <option value="false">未參加</option>
-      </select>
-      <select id="filterReal" onchange="render()">
-        <option value="">真實程度</option>
-        <option value="真實抽獎">真實抽獎</option>
-        <option value="疑似廣告">疑似廣告</option>
-        <option value="待確認">待確認</option>
-      </select>
-      <select id="filterError" onchange="render()">
-        <option value="">錯誤回報</option>
-        <option value="has">有錯誤回報</option>
-        <option value="none">無錯誤回報</option>
-      </select>
-      <input type="text" id="filterKeyword" placeholder="搜尋標題/獎品..." oninput="render()" style="min-width:160px;">
-      <select id="sortBy" onchange="render()">
-        <option value="deadline">依截止時間</option>
-        <option value="createdAt">依建立時間</option>
-      </select>
+    <div class="card">
+      <label for="keyword">搜尋關鍵字</label>
+      <input type="text" id="keyword" placeholder="例如：抽獎、giveaway、iPhone 抽獎、免費送..." autofocus>
+      
+      <div class="quick-tags">
+        <button class="tag" onclick="setKeyword('抽獎')">抽獎</button>
+        <button class="tag" onclick="setKeyword('giveaway')">giveaway</button>
+        <button class="tag" onclick="setKeyword('免費送')">免費送</button>
+        <button class="tag" onclick="setKeyword('抽獎 送')">抽獎 送</button>
+        <button class="tag" onclick="setKeyword('#抽獎')">#抽獎</button>
+        <button class="tag" onclick="setKeyword('#giveaway')">#giveaway</button>
+        <button class="tag" onclick="setKeyword('留言抽')">留言抽</button>
+        <button class="tag" onclick="setKeyword('追蹤抽')">追蹤抽</button>
+      </div>
     </div>
 
-    <div class="stats" id="stats"></div>
-    <div class="card-list" id="list"></div>
-  </div>
-
-  <!-- 新增/編輯 Modal -->
-  <div class="modal" id="modal">
-    <div class="modal-content">
-      <h2 id="modalTitle">新增活動</h2>
-      <form id="form" onsubmit="saveItem(event)">
-        <input type="hidden" id="editId">
-        <div class="form-group">
-          <label>標題 *</label>
-          <input type="text" id="title" required>
-        </div>
-        <div class="form-group">
-          <label>平台 *</label>
-          <select id="platform" required>
-            <option value="X">X (Twitter)</option>
-            <option value="FB">Facebook</option>
-            <option value="IG">Instagram</option>
-            <option value="Threads">Threads</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>原始連結 *</label>
-          <input type="url" id="url" required placeholder="https://">
-        </div>
-        <div class="form-group">
-          <label>主辦方 / 帳號</label>
-          <input type="text" id="organizer">
-        </div>
-        <div class="form-group">
-          <label>獎品內容</label>
-          <textarea id="prizes"></textarea>
-        </div>
-        <div class="form-group">
-          <label>參與方式</label>
-          <textarea id="howToJoin"></textarea>
-        </div>
-        <div class="form-group">
-          <label>中獎機率備註</label>
-          <input type="text" id="winRateNote" placeholder="例如：留言抽3名">
-        </div>
-        <div class="form-group">
-          <label>獎品領取方式</label>
-          <input type="text" id="claimMethod" placeholder="自取 / 可寄送 / 僅限台灣...">
-        </div>
-        <div class="form-group">
-          <label>截止時間 *</label>
-          <input type="datetime-local" id="deadline" required>
-        </div>
-        <div class="form-group">
-          <label>開獎時間</label>
-          <input type="date" id="drawDate">
-        </div>
-        <div class="form-group">
-          <label>真實程度</label>
-          <select id="isReal">
-            <option value="待確認">待確認</option>
-            <option value="真實抽獎">真實抽獎</option>
-            <option value="疑似廣告">疑似廣告</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>個人備註</label>
-          <textarea id="note"></textarea>
-        </div>
-        <div class="form-actions">
-          <button type="button" class="btn btn-outline" onclick="closeModal()">取消</button>
-          <button type="submit" class="btn btn-primary">儲存</button>
-        </div>
-      </form>
+    <div class="card">
+      <label>選擇要搜尋的平台</label>
+      <div class="platforms">
+        <label class="platform-item">
+          <input type="checkbox" id="plat-x" checked>
+          <span>X (Twitter)</span>
+        </label>
+        <label class="platform-item">
+          <input type="checkbox" id="plat-fb" checked>
+          <span>Facebook</span>
+        </label>
+        <label class="platform-item">
+          <input type="checkbox" id="plat-ig" checked>
+          <span>Instagram</span>
+        </label>
+        <label class="platform-item">
+          <input type="checkbox" id="plat-threads" checked>
+          <span>Threads</span>
+        </label>
+      </div>
     </div>
+
+    <button class="btn-search" onclick="generateLinks()">產生搜尋連結</button>
+
+    <div class="card results" id="results">
+      <h3 style="margin-bottom: 16px;">搜尋結果連結</h3>
+      <div id="resultList"></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom: 12px;">使用小技巧</h3>
+      <div class="tips">
+        <ul>
+          <li><strong>X (Twitter)</strong>：建議加上「最新」排序，較容易看到正在進行的抽獎。</li>
+          <li><strong>Instagram</strong>：Hashtag 效果通常比一般關鍵字好（例如直接搜 #抽獎）。</li>
+          <li><strong>Facebook</strong>：可以多試「貼文」篩選，並留意社團與粉專。</li>
+          <li><strong>Threads</strong>：目前相對好找，關鍵字越精準越好。</li>
+          <li>搜尋後記得自己判斷活動是否真實、是否已截止。</li>
+          <li>常用進階關鍵字：<code>抽獎 OR giveaway</code>、<code>留言抽</code>、<code>追蹤抽獎</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <footer>
+      純網頁工具 · 資料不會上傳到任何伺服器 · 可部署至 GitHub Pages
+    </footer>
   </div>
 
   <script>
-    let items = JSON.parse(localStorage.getItem('lotteryItems') || '[]');
-
-    function saveToStorage() {
-      localStorage.setItem('lotteryItems', JSON.stringify(items));
+    function setKeyword(text) {
+      document.getElementById('keyword').value = text;
+      document.getElementById('keyword').focus();
     }
 
-    function generateId() {
-      return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-    }
-
-    // ========== 自動狀態判斷（重點更新） ==========
-    function getStatus(item) {
-      // 1. 已標記中獎結果 → 已開獎
-      if (item.result === '中獎' || item.result === '未中') {
-        return '已開獎';
-      }
-
-      const now = new Date();
-      const deadline = new Date(item.deadline);
-
-      // 2. 還沒到截止時間 → 進行中
-      if (now <= deadline) {
-        return '進行中';
-      }
-
-      // 3. 已過截止時間
-      // 如果有填開獎時間，且開獎時間也過了 → 已結束
-      if (item.drawDate) {
-        const draw = new Date(item.drawDate + 'T23:59:59');
-        if (now > draw) {
-          return '已結束';
-        }
-      }
-
-      // 4. 只過截止、還沒開獎 → 已截止
-      return '已截止';
-    }
-
-    function getCountdown(deadlineStr) {
-      const now = new Date();
-      const end = new Date(deadlineStr);
-      const diff = end - now;
-      if (diff <= 0) return { text: '已截止', className: '' };
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-      let text = '';
-      if (days > 0) text = `剩餘 ${days} 天 ${hours} 小時`;
-      else if (hours > 0) text = `剩餘 ${hours} 小時 ${mins} 分`;
-      else text = `剩餘 ${mins} 分鐘`;
-
-      let className = 'safe';
-      if (days <= 1) className = 'soon';
-      if (days === 0 && hours < 12) className = '';
-      return { text, className };
-    }
-
-    function render() {
-      const platform = document.getElementById('filterPlatform').value;
-      const status = document.getElementById('filterStatus').value;
-      const participated = document.getElementById('filterParticipated').value;
-      const isReal = document.getElementById('filterReal').value;
-      const errorFilter = document.getElementById('filterError').value;
-      const keyword = document.getElementById('filterKeyword').value.toLowerCase();
-      const sortBy = document.getElementById('sortBy').value;
-
-      let filtered = items.filter(item => {
-        if (platform && item.platform !== platform) return false;
-        if (status && getStatus(item) !== status) return false;
-        if (participated === 'true' && !item.participated) return false;
-        if (participated === 'false' && item.participated) return false;
-        if (isReal && item.isReal !== isReal) return false;
-        if (errorFilter === 'has' && !item.errorReport) return false;
-        if (errorFilter === 'none' && item.errorReport) return false;
-        if (keyword) {
-          const text = (item.title + (item.prizes||'') + (item.organizer||'') + (item.note||'')).toLowerCase();
-          if (!text.includes(keyword)) return false;
-        }
-        return true;
-      });
-
-      filtered.sort((a, b) => {
-        if (sortBy === 'deadline') return new Date(a.deadline) - new Date(b.deadline);
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      });
-
-      const total = items.length;
-      const active = items.filter(i => getStatus(i) === '進行中').length;
-      const joined = items.filter(i => i.participated).length;
-      const won = items.filter(i => i.result === '中獎').length;
-      const errorCount = items.filter(i => i.errorReport).length;
-      document.getElementById('stats').textContent =
-        `共 ${total} 筆　｜　進行中 ${active}　｜　已參加 ${joined}　｜　中獎 ${won}　｜　有錯誤回報 ${errorCount}`;
-
-      const listEl = document.getElementById('list');
-      if (filtered.length === 0) {
-        listEl.innerHTML = '<div class="empty">目前沒有符合的活動<br>點右上角「新增活動」開始吧！</div>';
+    function generateLinks() {
+      const keyword = document.getElementById('keyword').value.trim();
+      if (!keyword) {
+        alert('請先輸入搜尋關鍵字');
         return;
       }
 
-      listEl.innerHTML = filtered.map(item => {
-        const status = getStatus(item);
-        const cd = getCountdown(item.deadline);
-        const platformClass = {
-          'X': 'badge-x', 'FB': 'badge-fb', 'IG': 'badge-ig', 'Threads': 'badge-threads'
-        }[item.platform] || '';
+      const encoded = encodeURIComponent(keyword);
+      const results = [];
 
-        const hasError = !!item.errorReport;
-
-        return `
-          <div class="card ${item.participated ? 'participated' : ''} ${status !== '進行中' ? 'ended' : ''} ${hasError ? 'has-error' : ''}">
-            <div class="card-header">
-              <div>
-                <div class="card-title">${escapeHtml(item.title)}</div>
-                <div style="margin-top:4px;">
-                  <span class="badge ${platformClass}">${item.platform}</span>
-                  <span class="badge" style="background:#f1f5f9;">${status}</span>
-                  <span class="badge" style="background:#fef3c7;">${item.isReal || '待確認'}</span>
-                  ${hasError ? '<span class="badge badge-error">有錯誤回報</span>' : ''}
-                </div>
-              </div>
-              <div class="countdown ${cd.className}">${cd.text}</div>
-            </div>
-            <div class="meta">
-              ${item.prizes ? `<div>🎁 ${escapeHtml(item.prizes)}</div>` : ''}
-              ${item.howToJoin ? `<div>📝 ${escapeHtml(item.howToJoin)}</div>` : ''}
-              ${item.claimMethod ? `<div>📦 領取：${escapeHtml(item.claimMethod)}</div>` : ''}
-              ${item.organizer ? `<div>👤 ${escapeHtml(item.organizer)}</div>` : ''}
-              <div>🔗 <a href="${item.url}" target="_blank" rel="noopener">打開原始連結</a></div>
-              ${item.participated ? `<div style="color:var(--success);">✅ 已參加 ${item.participateDate ? '('+item.participateDate.slice(0,10)+')' : ''}</div>` : ''}
-              ${item.result && item.result !== '未開獎' ? `<div>🏆 結果：<strong>${item.result}</strong> ${item.resultNote ? '- '+escapeHtml(item.resultNote) : ''}</div>` : ''}
-            </div>
-            ${hasError ? `<div class="error-box">⚠️ 錯誤回報：${escapeHtml(item.errorReport)}</div>` : ''}
-            <div class="actions">
-              <button class="btn ${item.participated ? 'btn-success' : 'btn-outline'}" onclick="toggleParticipated('${item.id}')">
-                ${item.participated ? '已參加' : '標記已參加'}
-              </button>
-              <button class="btn btn-outline" onclick="setResult('${item.id}', '中獎')">標記中獎</button>
-              <button class="btn btn-outline" onclick="setResult('${item.id}', '未中')">標記未中</button>
-              <button class="btn btn-warning" onclick="reportError('${item.id}')">錯誤回報</button>
-              <button class="btn btn-outline" onclick="editItem('${item.id}')">編輯</button>
-              <button class="btn btn-danger" onclick="deleteItem('${item.id}')">刪除</button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function escapeHtml(text) {
-      if (!text) return '';
-      return String(text)
-        .replace(/&/g,'&amp;')
-        .replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;')
-        .replace(/"/g,'&quot;');
-    }
-
-    function openModal(id = null) {
-      document.getElementById('modal').classList.add('show');
-      document.getElementById('form').reset();
-      document.getElementById('editId').value = '';
-      document.getElementById('modalTitle').textContent = '新增活動';
-
-      if (id) {
-        const item = items.find(i => i.id === id);
-        if (!item) return;
-        document.getElementById('modalTitle').textContent = '編輯活動';
-        document.getElementById('editId').value = id;
-        document.getElementById('title').value = item.title || '';
-        document.getElementById('platform').value = item.platform || 'X';
-        document.getElementById('url').value = item.url || '';
-        document.getElementById('organizer').value = item.organizer || '';
-        document.getElementById('prizes').value = item.prizes || '';
-        document.getElementById('howToJoin').value = item.howToJoin || '';
-        document.getElementById('winRateNote').value = item.winRateNote || '';
-        document.getElementById('claimMethod').value = item.claimMethod || '';
-        document.getElementById('deadline').value = item.deadline ? item.deadline.slice(0,16) : '';
-        document.getElementById('drawDate').value = item.drawDate || '';
-        document.getElementById('isReal').value = item.isReal || '待確認';
-        document.getElementById('note').value = item.note || '';
-      }
-    }
-
-    function closeModal() {
-      document.getElementById('modal').classList.remove('show');
-    }
-
-    function saveItem(e) {
-      e.preventDefault();
-      const id = document.getElementById('editId').value;
-      const data = {
-        title: document.getElementById('title').value.trim(),
-        platform: document.getElementById('platform').value,
-        url: document.getElementById('url').value.trim(),
-        organizer: document.getElementById('organizer').value.trim(),
-        prizes: document.getElementById('prizes').value.trim(),
-        howToJoin: document.getElementById('howToJoin').value.trim(),
-        winRateNote: document.getElementById('winRateNote').value.trim(),
-        claimMethod: document.getElementById('claimMethod').value.trim(),
-        deadline: document.getElementById('deadline').value,
-        drawDate: document.getElementById('drawDate').value,
-        isReal: document.getElementById('isReal').value,
-        note: document.getElementById('note').value.trim(),
-        updatedAt: new Date().toISOString()
-      };
-
-      if (id) {
-        const idx = items.findIndex(i => i.id === id);
-        if (idx !== -1) items[idx] = { ...items[idx], ...data };
-      } else {
-        items.unshift({
-          id: generateId(),
-          ...data,
-          participated: false,
-          participateDate: null,
-          result: '未開獎',
-          resultNote: '',
-          errorReport: '',
-          createdAt: new Date().toISOString()
+      // X (Twitter) - 使用 Latest 排序，較適合找正在進行的活動
+      if (document.getElementById('plat-x').checked) {
+        results.push({
+          name: 'X (Twitter)',
+          iconClass: 'icon-x',
+          // f=live 表示 Latest
+          url: `https://x.com/search?q=${encoded}&src=typed_query&f=live`
         });
       }
-      saveToStorage();
-      closeModal();
-      render();
-    }
 
-    function editItem(id) { openModal(id); }
+      // Facebook
+      if (document.getElementById('plat-fb').checked) {
+        results.push({
+          name: 'Facebook',
+          iconClass: 'icon-fb',
+          url: `https://www.facebook.com/search/posts/?q=${encoded}`
+        });
+      }
 
-    function deleteItem(id) {
-      if (!confirm('確定要刪除這筆活動嗎？')) return;
-      items = items.filter(i => i.id !== id);
-      saveToStorage();
-      render();
-    }
-
-    function toggleParticipated(id) {
-      const item = items.find(i => i.id === id);
-      if (!item) return;
-      item.participated = !item.participated;
-      item.participateDate = item.participated ? new Date().toISOString() : null;
-      item.updatedAt = new Date().toISOString();
-      saveToStorage();
-      render();
-    }
-
-    function setResult(id, result) {
-      const item = items.find(i => i.id === id);
-      if (!item) return;
-      const note = prompt(result === '中獎' ? '中獎備註（可填名單連結）：' : '備註（可留空）：', item.resultNote || '');
-      item.result = result;
-      item.resultNote = note || '';
-      item.updatedAt = new Date().toISOString();
-      saveToStorage();
-      render();
-    }
-
-    // ========== 錯誤回報功能 ==========
-    function reportError(id) {
-      const item = items.find(i => i.id === id);
-      if (!item) return;
-
-      const current = item.errorReport || '';
-      const msg = prompt(
-        '請輸入錯誤內容或問題描述：\n（例如：連結失效、已提前結束、資訊錯誤、疑似詐騙...）\n\n留空並確定 = 清除回報',
-        current
-      );
-
-      if (msg === null) return; // 使用者按取消
-
-      item.errorReport = msg.trim();
-      item.updatedAt = new Date().toISOString();
-      saveToStorage();
-      render();
-    }
-
-    function exportData() {
-      const dataStr = JSON.stringify(items, null, 2);
-      const blob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `lottery-backup-${new Date().toISOString().slice(0,10)}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function importData(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const imported = JSON.parse(e.target.result);
-          if (!Array.isArray(imported)) throw new Error('格式錯誤');
-          if (confirm(`即將匯入 ${imported.length} 筆資料，是否覆蓋現有資料？\n（建議先匯出備份）`)) {
-            items = imported;
-            saveToStorage();
-            render();
-            alert('匯入成功！');
-          }
-        } catch (err) {
-          alert('匯入失敗，檔案格式不正確');
+      // Instagram
+      if (document.getElementById('plat-ig').checked) {
+        // 如果關鍵字是 hashtag 形式，優先用 tag 頁面
+        let igUrl;
+        if (keyword.startsWith('#')) {
+          const tag = encodeURIComponent(keyword.slice(1));
+          igUrl = `https://www.instagram.com/explore/tags/${tag}/`;
+        } else {
+          igUrl = `https://www.instagram.com/explore/search/keyword/?q=${encoded}`;
         }
-      };
-      reader.readAsText(file);
-      event.target.value = '';
+        results.push({
+          name: 'Instagram',
+          iconClass: 'icon-ig',
+          url: igUrl
+        });
+      }
+
+      // Threads
+      if (document.getElementById('plat-threads').checked) {
+        results.push({
+          name: 'Threads',
+          iconClass: 'icon-threads',
+          url: `https://www.threads.net/search?q=${encoded}&serp_type=default`
+        });
+      }
+
+      if (results.length === 0) {
+        alert('請至少選擇一個平台');
+        return;
+      }
+
+      // 渲染結果
+      const listEl = document.getElementById('resultList');
+      listEl.innerHTML = results.map(item => `
+        <div class="result-item">
+          <div class="info">
+            <div class="platform-icon ${item.iconClass}">${item.name.charAt(0)}</div>
+            <div>
+              <div style="font-weight:600;">${item.name}</div>
+              <div style="font-size:0.85rem;color:var(--muted);">點擊右側按鈕開啟搜尋</div>
+            </div>
+          </div>
+          <a class="btn-open" href="${item.url}" target="_blank" rel="noopener">開啟搜尋</a>
+        </div>
+      `).join('');
+
+      document.getElementById('results').classList.add('show');
+      
+      // 平滑捲動到結果
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    document.getElementById('modal').addEventListener('click', function(e) {
-      if (e.target === this) closeModal();
+    // 支援按 Enter 搜尋
+    document.getElementById('keyword').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        generateLinks();
+      }
     });
-
-    render();
   </script>
 </body>
 </html>
